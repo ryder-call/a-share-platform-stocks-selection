@@ -33,15 +33,15 @@ except ImportError:
 # Define request body model using Pydantic
 class ScanConfigRequest(BaseModel):
     """Request model for stock platform scan configuration."""
-    # Window settings - 基于安记食品平台期分析的最佳参数组合
+    # Window settings - 基于平台期分析的最佳参数组合
     windows: List[int] = Field(default_factory=lambda: [20, 30, 60])
 
     # Price pattern thresholds - 适合识别安记食品类型的平台期
     box_threshold: float = 0.5
     ma_diff_threshold: float = 0.03
-    volatility_threshold: float = 0.09  # 从0.04调整到0.09，以便更好地识别安记食品类型的平台期
+    volatility_threshold: float = 0.09  # 从0.04调整到0.09，以便更好地识别平台期
 
-    # Volume analysis settings - 适合识别安记食品类型的平台期
+    # Volume analysis settings - 适合平台期
     use_volume_analysis: bool = True
     # Maximum volume change ratio for consolidation
     volume_change_threshold: float = 0.9
@@ -62,7 +62,7 @@ class ScanConfigRequest(BaseModel):
     # Number of days within which the decline should have occurred
     decline_period_days: int = 180
     # Minimum decline percentage from high to be considered at low position
-    decline_threshold: float = 0.3  # 从0.5降低到0.3，更符合安记食品的实际情况
+    decline_threshold: float = 0.3  # 从0.5降低到0.3，更符合实际情况
 
     # Rapid decline detection settings
     # Whether to use rapid decline detection
