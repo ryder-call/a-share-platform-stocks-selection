@@ -126,7 +126,5 @@ __pycache__/
 *.docx
 *.html
 
-analyze*
-anjishi*
 ref/
 cases/
