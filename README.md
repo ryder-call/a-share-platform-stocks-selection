@@ -287,3 +287,6 @@ uvicorn index:app --reload --port 8001
 <div align="center">
 <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=12,15,20,24&section=footer&height=100&animation=fadeIn" />
 </div>
+
+## 许可证
+注意本项目非授权不可用于商业用途，如需授权请联系moonbridge24@gmail.com
