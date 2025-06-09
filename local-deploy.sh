@@ -50,11 +50,16 @@ echo "🔨 构建并启动服务..."
 if ! docker-compose up --build -d; then
     echo "❌ 构建失败！"
     echo ""
-    echo "🔍 故障排除步骤:"
-    echo "1. 运行测试构建: ./test-build.sh"
-    echo "2. 查看详细错误: docker-compose up --build"
-    echo "3. 清理缓存: docker system prune -f"
-    echo "4. 检查日志: docker-compose logs"
+    echo "🔍 快速修复步骤:"
+    echo "1. 运行快速测试: ./quick-test.sh"
+    echo "2. 运行修复脚本: ./fix-build.sh"
+    echo "3. 查看详细错误: docker-compose up --build"
+    echo "4. 清理并重试: docker system prune -f && docker-compose up --build -d"
+    echo ""
+    echo "📋 常见问题:"
+    echo "- 网络连接问题: 检查网络连接"
+    echo "- 内存不足: 增加 Docker 内存限制"
+    echo "- 端口冲突: 运行 ./configure-ports.sh"
     exit 1
 fi
 
