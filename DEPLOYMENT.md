@@ -61,9 +61,40 @@ docker-compose down
 docker-compose up --build -d
 ```
 
+## 💻 个人使用部署
+
+### 方案二：本地部署（个人推荐）
+
+**适合场景**：个人开发、学习使用，无需复杂的 CI/CD 流程
+
+**优点**：
+- ✅ 无需配置 GitHub Actions
+- ✅ 无需 Docker Hub 账号
+- ✅ 部署简单快速
+- ✅ 适合本地开发测试
+
+#### 使用方法
+
+```bash
+# 1. 克隆项目
+git clone https://github.com/your-username/a-share-platform-stocks-selection.git
+cd a-share-platform-stocks-selection
+
+# 2. 一键本地部署
+chmod +x local-deploy.sh
+./local-deploy.sh
+```
+
+`local-deploy.sh` 脚本会自动：
+- 拉取最新代码
+- 检查端口冲突
+- 构建并启动服务
+- 进行健康检查
+- 显示访问地址
+
 ## 🔧 手动部署
 
-### 方案二：传统部署方式
+### 方案三：传统部署方式
 
 如果你不想使用 Docker，可以手动部署前后端。
 
@@ -128,14 +159,16 @@ server {
 
 ## 🌐 云服务器部署
 
-### 方案三：使用 GitHub Actions 自动部署
+### 方案四：使用 GitHub Actions 自动部署
+
+**注意**：个人使用建议跳过此方案，直接使用方案二（本地部署）
 
 1. **在 GitHub 仓库设置 Secrets**
    - `HOST`: 服务器 IP 地址
    - `USERNAME`: 服务器用户名
    - `SSH_KEY`: SSH 私钥
-   - `DOCKER_USERNAME`: Docker Hub 用户名（可选）
-   - `DOCKER_PASSWORD`: Docker Hub 密码（可选）
+
+   > 💡 **个人使用提示**：无需设置 `DOCKER_USERNAME` 和 `DOCKER_PASSWORD`，我们已经移除了 Docker Hub 相关配置
 
 2. **在服务器上准备环境**
 ```bash

@@ -52,6 +52,28 @@
 
 ## 项目安装
 
+## 🚀 快速部署（推荐）
+
+### Docker 一键部署
+
+```bash
+# 1. 克隆项目
+git clone https://github.com/your-username/a-share-platform-stocks-selection.git
+cd a-share-platform-stocks-selection
+
+# 2. 检查端口冲突（可选）
+./check-ports.sh
+
+# 3. 一键部署
+./local-deploy.sh
+```
+
+访问地址：
+- 前端：http://localhost:3000
+- 后端 API：http://localhost:8001
+
+### 开发环境安装
+
 前端安装与启动:
 
 ```bash
