@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  # 后端服务
+  backend:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: stock-platform-backend
+    ports:
+      - "8001:8001"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8001
+    volumes:
+      - ./cases:/app/cases  # 挂载案例数据目录
+    restart: unless-stopped
+    networks:
+      - stock-platform-network
+
+  # 前端服务
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: stock-platform-frontend
+    ports:
+      - "3000:80"  # 使用 3000 端口避免冲突
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - stock-platform-network
+
+networks:
+  stock-platform-network:
+    driver: bridge
+
+volumes:
+  cases_data:
+    driver: local

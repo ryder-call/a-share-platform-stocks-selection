@@ -207,6 +207,19 @@ async def root():
     }
 
 
+@app.get("/health")
+async def health_check():
+    """
+    Health check endpoint for deployment monitoring.
+    """
+    return {
+        "status": "healthy",
+        "service": "Stock Platform Scanner API",
+        "version": "1.0.0",
+        "timestamp": pd.Timestamp.now().isoformat()
+    }
+
+
 @app.post("/api/scan/start", response_model=TaskCreationResponse)
 async def start_scan(config_request: ScanConfigRequest, background_tasks: BackgroundTasks):
     """
@@ -232,9 +245,12 @@ async def start_scan(config_request: ScanConfigRequest, background_tasks: Backgr
     # Start the scan in the background
     def run_scan_task():
         try:
+            print(f"\n{Fore.CYAN}===== 开始执行扫描任务 [{task_id}] ====={Style.RESET_ALL}")
             # Fetch stock basics
             with BaostockConnectionManager():
+                print(f"{Fore.CYAN}第1步: 正在获取股票基本信息...{Style.RESET_ALL}")
                 stock_basics_df = fetch_stock_basics()
+                print(f"{Fore.GREEN}获取到 {len(stock_basics_df)} 条股票基本信息记录{Style.RESET_ALL}")
 
                 # Update task status
                 task_manager.update_task(
@@ -242,35 +258,46 @@ async def start_scan(config_request: ScanConfigRequest, background_tasks: Backgr
                     progress=10,
                     message="Fetched stock basic information"
                 )
+                print(f"{Fore.CYAN}任务进度更新: 10%{Style.RESET_ALL}")
 
                 # Fetch industry data
                 try:
+                    print(f"{Fore.CYAN}第2步: 正在获取行业分类数据...{Style.RESET_ALL}")
                     industry_df = fetch_industry_data()
+                    print(f"{Fore.GREEN}获取到 {len(industry_df)} 条行业分类记录{Style.RESET_ALL}")
                     task_manager.update_task(
                         task_id,
                         progress=20,
                         message="Fetched industry classification data"
                     )
+                    print(f"{Fore.CYAN}任务进度更新: 20%{Style.RESET_ALL}")
                 except Exception as e:
                     print(
-                        f"{Fore.YELLOW}Warning: Failed to fetch industry data: {e}{Style.RESET_ALL}")
+                        f"{Fore.YELLOW}警告: 获取行业数据失败: {e}{Style.RESET_ALL}")
+                    print(f"{Fore.YELLOW}详细错误: {traceback.format_exc()}{Style.RESET_ALL}")
                     industry_df = pd.DataFrame()
                     task_manager.update_task(
                         task_id,
                         progress=20,
                         message="Warning: Failed to fetch industry data, continuing without it"
                     )
+                    print(f"{Fore.CYAN}任务进度更新: 20% (无行业数据继续){Style.RESET_ALL}")
 
                 # Prepare stock list
+                print(f"{Fore.CYAN}第3步: 正在准备股票列表...{Style.RESET_ALL}")
                 stock_list = prepare_stock_list(stock_basics_df, industry_df)
+                print(f"{Fore.GREEN}准备完成，共 {len(stock_list)} 只股票待扫描{Style.RESET_ALL}")
                 task_manager.update_task(
                     task_id,
                     progress=30,
                     message=f"Prepared list of {len(stock_list)} stocks for scanning"
                 )
+                print(f"{Fore.CYAN}任务进度更新: 30%{Style.RESET_ALL}")
 
                 # Create scan config
+                print(f"{Fore.CYAN}第4步: 创建扫描配置...{Style.RESET_ALL}")
                 scan_config = ScanConfig(**config_dict)
+                print(f"{Fore.GREEN}扫描配置创建完成{Style.RESET_ALL}")
 
                 # Define progress update callback
                 def update_progress(progress=None, message=None):
@@ -279,14 +306,19 @@ async def start_scan(config_request: ScanConfigRequest, background_tasks: Backgr
                         scaled_progress = 30 + int(progress * 0.6)
                         task_manager.update_task(
                             task_id, progress=scaled_progress, message=message)
+                        print(f"{Fore.CYAN}任务进度更新: {scaled_progress}%, 消息: {message}{Style.RESET_ALL}")
 
                 # Run the scan
+                print(f"{Fore.CYAN}第5步: 开始扫描股票...{Style.RESET_ALL}")
                 platform_stocks = scan_stocks(
                     stock_list, scan_config, update_progress)
+                print(f"{Fore.GREEN}扫描完成，找到 {len(platform_stocks)} 只符合条件的股票{Style.RESET_ALL}")
 
                 # Process results for API response
+                print(f"{Fore.CYAN}第6步: 处理扫描结果...{Style.RESET_ALL}")
                 result_stocks = []
-                for stock in platform_stocks:
+                for i, stock in enumerate(platform_stocks):
+                    print(f"{Fore.CYAN}处理第 {i+1}/{len(platform_stocks)} 只股票: {stock.get('code')} {stock.get('name')}{Style.RESET_ALL}")
                     # Convert kline_data to KlineDataPoint objects
                     kline_data = []
                     for point in stock.get('kline_data', []):
@@ -307,7 +339,7 @@ async def start_scan(config_request: ScanConfigRequest, background_tasks: Backgr
                             kline_data.append(KlineDataPoint(**kline_point))
                         except Exception as e:
                             print(
-                                f"{Fore.YELLOW}Warning: Failed to process K-line data point: {e}{Style.RESET_ALL}")
+                                f"{Fore.YELLOW}警告: 处理K线数据点失败: {e}{Style.RESET_ALL}")
                             continue
 
                     # Create StockScanResult object
@@ -320,7 +352,7 @@ async def start_scan(config_request: ScanConfigRequest, background_tasks: Backgr
                                     mark_lines.append(MarkLine(**mark))
                                 except Exception as e:
                                     print(
-                                        f"{Fore.YELLOW}Warning: Failed to process mark line: {e}{Style.RESET_ALL}")
+                                        f"{Fore.YELLOW}警告: 处理标记线失败: {e}{Style.RESET_ALL}")
                                     continue
 
                         result_stock = StockScanResult(
@@ -335,10 +367,11 @@ async def start_scan(config_request: ScanConfigRequest, background_tasks: Backgr
                         result_stocks.append(result_stock)
                     except Exception as e:
                         print(
-                            f"{Fore.RED}Error creating StockScanResult: {e}{Style.RESET_ALL}")
+                            f"{Fore.RED}创建StockScanResult对象时出错: {e}{Style.RESET_ALL}")
                         continue
 
                 # Update task with final result
+                print(f"{Fore.CYAN}第7步: 完成任务，更新最终结果...{Style.RESET_ALL}")
                 task_manager.update_task(
                     task_id,
                     status=TaskStatus.COMPLETED,
@@ -346,15 +379,17 @@ async def start_scan(config_request: ScanConfigRequest, background_tasks: Backgr
                     message=f"Scan completed. Found {len(result_stocks)} platform stocks.",
                     result=[stock.model_dump() for stock in result_stocks]
                 )
+                print(f"{Fore.GREEN}===== 扫描任务 [{task_id}] 成功完成! ====={Style.RESET_ALL}")
 
         except Exception as e:
-            print(f"{Fore.RED}Error in scan task: {e}{Style.RESET_ALL}")
-            traceback.print_exc()
+            print(f"{Fore.RED}扫描任务出错: {e}{Style.RESET_ALL}")
+            print(f"{Fore.RED}详细错误信息:\n{traceback.format_exc()}{Style.RESET_ALL}")
             task_manager.update_task(
                 task_id,
                 status=TaskStatus.FAILED,
                 error=f"Scan failed: {str(e)}\n{traceback.format_exc()}"
             )
+            print(f"{Fore.RED}===== 扫描任务 [{task_id}] 失败! ====={Style.RESET_ALL}")
 
     # Start the task in the background
     background_tasks.add_task(run_scan_task)
