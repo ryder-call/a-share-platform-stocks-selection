@@ -16,6 +16,15 @@ README.md
 # API 目录（前端构建时不需要）
 api/
 
+# 部署相关文件
+deploy.sh
+local-deploy.sh
+check-ports.sh
+configure-ports.sh
+docker-compose*.yml
+DEPLOYMENT.md
+QUICK-START.md
+
 # 其他
 *.log
 dist/

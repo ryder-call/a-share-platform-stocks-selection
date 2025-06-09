@@ -47,7 +47,16 @@ fi
 
 # 构建并启动服务
 echo "🔨 构建并启动服务..."
-docker-compose up --build -d
+if ! docker-compose up --build -d; then
+    echo "❌ 构建失败！"
+    echo ""
+    echo "🔍 故障排除步骤:"
+    echo "1. 运行测试构建: ./test-build.sh"
+    echo "2. 查看详细错误: docker-compose up --build"
+    echo "3. 清理缓存: docker system prune -f"
+    echo "4. 检查日志: docker-compose logs"
+    exit 1
+fi
 
 # 等待服务启动
 echo "⏳ 等待服务启动..."
