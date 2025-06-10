@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 API endpoints for case management.
 """
@@ -6,11 +7,20 @@ from fastapi import APIRouter, HTTPException, Body
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel
 
-from .case_manager import (
-    get_cases, get_case, create_case, update_case,
-    delete_case, create_anjishi_case, create_case_from_analysis
-)
-from .json_utils import sanitize_float_for_json
+try:
+    # 尝试直接导入（Docker 环境中）
+    from case_manager import (
+        get_cases, get_case, create_case, update_case,
+        delete_case, create_anjishi_case, create_case_from_analysis
+    )
+    from json_utils import sanitize_float_for_json
+except ImportError:
+    # 如果直接导入失败，尝试相对导入（本地开发环境）
+    from .case_manager import (
+        get_cases, get_case, create_case, update_case,
+        delete_case, create_anjishi_case, create_case_from_analysis
+    )
+    from .json_utils import sanitize_float_for_json
 
 # Create router
 router = APIRouter()

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Platform Scanner module for scanning stocks for platform consolidation patterns.
 """
@@ -10,15 +11,28 @@ from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from tqdm import tqdm
 from colorama import Fore, Style
 
-from .data_fetcher import fetch_kline_data, baostock_login
-from .industry_filter import apply_industry_diversity_filter
-from .config import ScanConfig
+try:
+    # 尝试直接导入（Docker 环境中）
+    from data_fetcher import fetch_kline_data, baostock_login
+    from industry_filter import apply_industry_diversity_filter
+    from config import ScanConfig
 
-# Import analyzers
-from .analyzers.price_analyzer import analyze_price
-from .analyzers.volume_analyzer import analyze_volume
-from .analyzers.combined_analyzer import analyze_stock
-from .analyzers.fundamental_analyzer import analyze_fundamentals
+    # Import analyzers
+    from analyzers.price_analyzer import analyze_price
+    from analyzers.volume_analyzer import analyze_volume
+    from analyzers.combined_analyzer import analyze_stock
+    from analyzers.fundamental_analyzer import analyze_fundamentals
+except ImportError:
+    # 如果直接导入失败，尝试相对导入（本地开发环境）
+    from .data_fetcher import fetch_kline_data, baostock_login
+    from .industry_filter import apply_industry_diversity_filter
+    from .config import ScanConfig
+
+    # Import analyzers
+    from .analyzers.price_analyzer import analyze_price
+    from .analyzers.volume_analyzer import analyze_volume
+    from .analyzers.combined_analyzer import analyze_stock
+    from .analyzers.fundamental_analyzer import analyze_fundamentals
 
 
 def prepare_stock_list(stock_basics_df: pd.DataFrame,

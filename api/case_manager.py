@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Case management module for the platform consolidation scanner.
 """
@@ -8,7 +9,12 @@ from datetime import datetime
 from typing import Dict, List, Any, Optional
 import pandas as pd
 
-from .json_utils import sanitize_float_for_json, sanitize_kline_data
+try:
+    # 尝试直接导入（Docker 环境中）
+    from json_utils import sanitize_float_for_json, sanitize_kline_data
+except ImportError:
+    # 如果直接导入失败，尝试相对导入（本地开发环境）
+    from .json_utils import sanitize_float_for_json, sanitize_kline_data
 
 # Define the case directory
 CASE_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'cases')

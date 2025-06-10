@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # api/index.py
 from colorama import Fore, Style
 import colorama  # For colored console output
@@ -14,20 +15,29 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
-# Import our modular components (using absolute imports)
+# Import our modular components
 try:
-    from api.config import ScanConfig
-    from api.task_manager import task_manager, TaskStatus
-    from api.data_fetcher import fetch_stock_basics, fetch_industry_data, BaostockConnectionManager
-    from api.platform_scanner import prepare_stock_list, scan_stocks
-    from api.case_api import router as case_router
+    # 尝试直接导入（Docker 环境中）
+    from config import ScanConfig
+    from task_manager import task_manager, TaskStatus
+    from data_fetcher import fetch_stock_basics, fetch_industry_data, BaostockConnectionManager
+    from platform_scanner import prepare_stock_list, scan_stocks
+    from case_api import router as case_router
 except ImportError:
-    # 如果绝对导入失败，尝试相对导入（本地开发环境）
-    from .config import ScanConfig
-    from .task_manager import task_manager, TaskStatus
-    from .data_fetcher import fetch_stock_basics, fetch_industry_data, BaostockConnectionManager
-    from .platform_scanner import prepare_stock_list, scan_stocks
-    from .case_api import router as case_router
+    try:
+        # 如果直接导入失败，尝试绝对导入（本地开发环境）
+        from api.config import ScanConfig
+        from api.task_manager import task_manager, TaskStatus
+        from api.data_fetcher import fetch_stock_basics, fetch_industry_data, BaostockConnectionManager
+        from api.platform_scanner import prepare_stock_list, scan_stocks
+        from api.case_api import router as case_router
+    except ImportError:
+        # 最后尝试相对导入
+        from .config import ScanConfig
+        from .task_manager import task_manager, TaskStatus
+        from .data_fetcher import fetch_stock_basics, fetch_industry_data, BaostockConnectionManager
+        from .platform_scanner import prepare_stock_list, scan_stocks
+        from .case_api import router as case_router
 
 
 # Define request body model using Pydantic
