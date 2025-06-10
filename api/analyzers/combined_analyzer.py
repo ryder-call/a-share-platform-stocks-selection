@@ -3,26 +3,17 @@ Combined Analyzer module for comprehensive stock analysis.
 """
 import pandas as pd
 import math
+import numpy as np
 from typing import Dict, Any, List, Optional
 
-try:
-    # 尝试直接导入（Docker 环境中）
-    from price_analyzer import analyze_price
-    from volume_analyzer import analyze_volume
-    from breakthrough_analyzer import analyze_breakthrough, check_breakthrough_confirmation
-    from window_weight_analyzer import apply_window_weights
-    from enhanced_platform_analyzer import analyze_enhanced_platform, check_enhanced_platform
-    from box_detector import analyze_box_pattern, check_box_pattern
-    from decline_analyzer import analyze_decline_speed, check_decline_pattern
-except ImportError:
-    # 如果直接导入失败，尝试相对导入（本地开发环境）
-    from .price_analyzer import analyze_price
-    from .volume_analyzer import analyze_volume
-    from .breakthrough_analyzer import analyze_breakthrough, check_breakthrough_confirmation
-    from .window_weight_analyzer import apply_window_weights
-    from .enhanced_platform_analyzer import analyze_enhanced_platform, check_enhanced_platform
-    from .box_detector import analyze_box_pattern, check_box_pattern
-    from .decline_analyzer import analyze_decline_speed, check_decline_pattern
+from .price_analyzer import analyze_price
+from .volume_analyzer import analyze_volume
+from .breakthrough_analyzer import analyze_breakthrough, check_breakthrough_confirmation
+from .window_weight_analyzer import apply_window_weights
+from .enhanced_platform_analyzer import analyze_enhanced_platform, check_enhanced_platform
+from .box_detector import analyze_box_pattern, check_box_pattern
+from .decline_analyzer import analyze_decline_speed, check_decline_pattern
+from .position_analyzer import analyze_position
 
 
 def analyze_stock(df: pd.DataFrame,
@@ -121,10 +112,6 @@ def analyze_stock(df: pd.DataFrame,
             }
         else:
             # Use traditional position analysis
-            try:
-                from position_analyzer import analyze_position
-            except ImportError:
-                from .position_analyzer import analyze_position
             position_result = analyze_position(
                 df,
                 high_point_lookback_days,

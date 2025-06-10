@@ -11,34 +11,12 @@ from fastapi import FastAPI, HTTPException, BackgroundTasks
 import sys
 import os
 
-# 添加当前目录到 Python 路径，以便导入模块
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-
 # Import our modular components
-try:
-    # 尝试直接导入（Docker 环境中）
-    from config import ScanConfig
-    from task_manager import task_manager, TaskStatus
-    from data_fetcher import fetch_stock_basics, fetch_industry_data, BaostockConnectionManager
-    from platform_scanner import prepare_stock_list, scan_stocks
-    from case_api import router as case_router
-except ImportError:
-    try:
-        # 如果直接导入失败，尝试绝对导入（本地开发环境）
-        from api.config import ScanConfig
-        from api.task_manager import task_manager, TaskStatus
-        from api.data_fetcher import fetch_stock_basics, fetch_industry_data, BaostockConnectionManager
-        from api.platform_scanner import prepare_stock_list, scan_stocks
-        from api.case_api import router as case_router
-    except ImportError:
-        # 最后尝试相对导入
-        from .config import ScanConfig
-        from .task_manager import task_manager, TaskStatus
-        from .data_fetcher import fetch_stock_basics, fetch_industry_data, BaostockConnectionManager
-        from .platform_scanner import prepare_stock_list, scan_stocks
-        from .case_api import router as case_router
-
+from config import ScanConfig
+from task_manager import task_manager, TaskStatus
+from data_fetcher import fetch_stock_basics, fetch_industry_data, BaostockConnectionManager
+from platform_scanner import prepare_stock_list, scan_stocks
+from case_api import router as case_router
 
 # Define request body model using Pydantic
 class ScanConfigRequest(BaseModel):

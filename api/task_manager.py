@@ -9,11 +9,7 @@ from typing import Dict, Any, Optional, List, Callable
 import threading
 import traceback
 
-try:
-    from api.json_utils import sanitize_task_result
-except ImportError:
-    # 如果绝对导入失败，尝试相对导入（本地开发环境）
-    from .json_utils import sanitize_task_result
+from json_utils import sanitize_task_result
 
 
 class TaskStatus(Enum):

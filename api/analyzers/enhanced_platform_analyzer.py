@@ -9,16 +9,9 @@ import pandas as pd
 import numpy as np
 from typing import Dict, Any, Tuple, List, Optional
 
-try:
-    # 尝试直接导入（Docker 环境中）
-    from price_analyzer import analyze_price, check_price_pattern
-    from volume_analyzer import analyze_volume
-    from box_detector import check_box_pattern
-except ImportError:
-    # 如果直接导入失败，尝试相对导入（本地开发环境）
-    from .price_analyzer import analyze_price, check_price_pattern
-    from .volume_analyzer import analyze_volume
-    from .box_detector import check_box_pattern
+from .price_analyzer import analyze_price, check_price_pattern
+from .volume_analyzer import analyze_volume
+from .box_detector import check_box_pattern
 
 
 def check_enhanced_platform(df: pd.DataFrame, window: int,
